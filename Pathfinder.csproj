@@ -205,6 +205,7 @@
     <Compile Include="Pathfinder\Exceptions\ModConflictException.cs" />
     <Compile Include="Pathfinder\Util\CmdArguments.cs" />
     <Compile Include="Pathfinder\Event\TerminalEvents.cs" />
+    <Compile Include="Pathfinder\Extension\PathfinderExtensionInfo.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup />
