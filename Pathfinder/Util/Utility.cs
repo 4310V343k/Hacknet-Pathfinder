@@ -545,5 +545,21 @@ namespace Pathfinder.Util
             public MedicalRecord medicalRecord;
             public NeopalsAccount Neopals   */
         }
+
+        public static T ObjectMap<T, TU>(this T target, TU source)
+        {
+            var tprops = typeof(T).GetFields();
+            tprops.ToList().ForEach(prop =>
+            {
+                var sp = typeof(TU).GetField(prop.Name);
+                if (sp != null)
+                {
+                    var value = sp.GetValue(source);
+                    typeof(T).GetField(prop.Name).SetValue(target, value);
+                }
+            });
+
+            return target;
+        }
     }
 }
