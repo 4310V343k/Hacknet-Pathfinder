@@ -20,6 +20,7 @@ using static Pathfinder.Attribute.PatchAttribute;
 using Pathfinder.Util.Types;
 using static Pathfinder.Event.DrawMainMenuTitlesEvent;
 using Pathfinder.Game.OS;
+using Pathfinder.Extension;
 
 namespace Pathfinder
 {
@@ -832,6 +833,15 @@ namespace Pathfinder
         public static void onTerminalWriteAppendEnd()
         {
             calledFromSingle = false;
+        }
+
+        [Patch("Hacknet.Extensions.ExtensionInfo.ReadExtensionInfo", -2, flags: InjectFlags.PassParametersRef | InjectFlags.ModifyReturn | InjectFlags.PassLocals,
+        localsID: new [] {0})]
+        public static bool onReadExtensionInfoEnd(out Hacknet.Extensions.ExtensionInfo result, ref Hacknet.Extensions.ExtensionInfo extensionInfo, ref string folderpath)
+        {
+            result = PathfinderExtensionInfo.CloneHacknetInfo(extensionInfo);
+            Console.WriteLine("Reading "+ folderpath);
+            return true;
         }
     }
 }
