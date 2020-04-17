@@ -840,6 +840,7 @@ namespace Pathfinder
         public static bool onReadExtensionInfoEnd(out Hacknet.Extensions.ExtensionInfo result, ref Hacknet.Extensions.ExtensionInfo extensionInfo, ref string folderpath)
         {
             result = PathfinderExtensionInfo.CloneHacknetInfo(extensionInfo);
+            ((PathfinderExtensionInfo)result).ParseInfoFromFolderPath(folderpath);
             Console.WriteLine("Reading "+ folderpath);
             return true;
         }
