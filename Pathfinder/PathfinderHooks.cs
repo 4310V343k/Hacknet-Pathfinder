@@ -845,13 +845,12 @@ namespace Pathfinder
             calledFromSingle = false;
         }
 
-        [Patch("Hacknet.Extensions.ExtensionInfo.ReadExtensionInfo", -2, flags: InjectFlags.PassParametersRef | InjectFlags.ModifyReturn | InjectFlags.PassLocals,
-        localsID: new [] {0})]
-        public static bool onReadExtensionInfoEnd(out Hacknet.Extensions.ExtensionInfo result, ref Hacknet.Extensions.ExtensionInfo extensionInfo, ref string folderpath)
+        [Patch("Hacknet.Extensions.ExtensionInfo.ReadExtensionInfo", flags: InjectFlags.PassParametersRef | InjectFlags.ModifyReturn)]
+        public static bool onReadExtensionInfo(out Hacknet.Extensions.ExtensionInfo result, ref string folderpath)
         {
-            result = PathfinderExtensionInfo.CloneHacknetInfo(extensionInfo);
-            ((PathfinderExtensionInfo)result).ParseInfoFromFolderPath(folderpath);
-            Console.WriteLine("Reading "+ folderpath);
+            var pfExt = new PathfinderExtensionInfo();
+            pfExt.ParseExtensionInfo(folderpath);
+            result = pfExt;
             return true;
         }
     }

@@ -73,6 +73,20 @@ namespace Pathfinder.Util
         public static bool ToBool(this string input, bool defaultVal = false)
             => defaultVal ? input?.ToLower() != "false" && input != "0" : input?.ToLower() == "true" || input == "1";
 
+        public static float ToFloat(this string input, float defaultVal = 0f)
+        {
+            if (float.TryParse(input, out var result))
+                return result;
+            return defaultVal;
+        }
+
+        public static int ToInt(this string input, int defaultVal = 0)
+        {
+            if (int.TryParse(input, out var result))
+                return result;
+            return defaultVal;
+        }
+
         public static List<Tuple<string, bool>> SerialSplit(this string text, char selector, string enders = "\\w", char esc = '\\')
         {
             var tokens = new List<Tuple<string, bool>>();
