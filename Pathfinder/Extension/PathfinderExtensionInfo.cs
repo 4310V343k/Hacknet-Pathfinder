@@ -33,6 +33,8 @@ namespace Pathfinder.Extension
 
         public void ParseExtensionInfo(string folderPath)
         {
+            if (!Directory.Exists(folderPath))
+                throw new FileNotFoundException($"Folder '{folderPath}' not found.");
             folderPath += Path.DirectorySeparatorChar;
             var extPath = folderPath + "ExtensionInfo.xml";
             if (!File.Exists(extPath))
@@ -41,43 +43,42 @@ namespace Pathfinder.Extension
             FolderPath = folderPath;
             Language = "en-us";
 
-            executor.AddExecutor("Language", (exec, info) => Language = info.Value ?? Language);
-            executor.AddExecutor("Name", (exec, info) => Name = info.Value);
-            executor.AddExecutor("AllowSaves", (exec, info) => AllowSave = info.Value.ToBool(true));
+            executor.AddExecutor("Language", (exec, info) => Language = info.Value ?? Language, true);
+            executor.AddExecutor("Name", (exec, info) => Name = info.Value, true);
+            executor.AddExecutor("AllowSaves", (exec, info) => AllowSave = info.Value.ToBool(true), true);
             executor.AddExecutor("StartingVisibleNodes", (exec, info) =>
             {
                 if (info.Value.IndexOfAny(new[] { ' ', '\t', '\r', '/' }) != -1)
                     Logger.Warn("Nonstandard StartingVisibleNodes seperator found");
                 StartingVisibleNodes = info.Value.Split(new[] { ',', ' ', '\t', '\r', '\n', '/' }, StringSplitOptions.RemoveEmptyEntries);
-            });
+            }, true);
             executor.AddExecutor("StartingMission", (exec, info) =>
-                StartingMissionPath = info.Value.ToLower() == "none" ? null : info.Value
-            );
+                StartingMissionPath = info.Value.ToLower() == "none" ? null : info.Value, true);
             executor.AddExecutor("StartingActions", (exec, info) =>
-                StartingActionsPath = info.Value.ToLower() == "none" ? null : info.Value);
+                StartingActionsPath = info.Value.ToLower() == "none" ? null : info.Value, true);
             executor.AddExecutor("Description", (exec, info) =>
-                Description = Utils.CleanFilterStringToRenderable(info.Value));
-            executor.AddExecutor("Faction", (exec, info) => FactionDescriptorPaths.Add(info.Value));
-            executor.AddExecutor("StartsWithTutorial", (exec, info) => StartsWithTutorial = info.Value.ToBool());
-            executor.AddExecutor("HasIntroStartup", (exec, info) => HasIntroStartup = info.Value.ToBool());
-            executor.AddExecutor("StartingTheme", (exec, info) => Theme = info.Value.ToLower());
-            executor.AddExecutor("IntroStartupSong", (exec, info) => IntroStartupSong = info.Value);
-            executor.AddExecutor("IntroStartupSongDelay", (exec, info) => IntroStartupSongDelay = info.Value.ToFloat());
-            executor.AddExecutor("SequencerSpinUpTime", (exec, info) => SequencerSpinUpTime = info.Value.ToFloat());
-            executor.AddExecutor("ActionsToRunOnSequencerStart", (exec, info) => ActionsToRunOnSequencerStart = info.Value);
-            executor.AddExecutor("SequencerFlagRequiredForStart", (exec, info) => SequencerFlagRequiredForStart = info.Value);
-            executor.AddExecutor("SequencerTargetID", (exec, info) => SequencerTargetID = info.Value);
-            executor.AddExecutor("WorkshopDescription", (exec, info) => WorkshopDescription = info.Value);
-            executor.AddExecutor("WorkshopVisibility", (exec, info) => WorkshopVisibility = (byte)info.Value.ToInt());
-            executor.AddExecutor("WorkshopTags", (exec, info) => WorkshopTags = info.Value);
-            executor.AddExecutor("WorkshopPreviewImagePath", (exec, info) => WorkshopPreviewImagePath = info.Value);
-            executor.AddExecutor("WorkshopLanguage", (exec, info) => WorkshopLanguage = info.Value);
-            executor.AddExecutor("WorkshopPublishID", (exec, info) => WorkshopPublishID = info.Value);
-            executor.AddExecutor("Logo", (exec, info) => TryLoadLogoImage(info.Value, true));
-            executor.AddExecutor("Pathfinder", (exec, info) => PathfinderExt = true);
-            executor.AddExecutor("Pathfinder.Dependents", (exec, info) => DependentsPaths = info.Value.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries));
+                Description = Utils.CleanFilterStringToRenderable(info.Value), true);
+            executor.AddExecutor("Faction", (exec, info) => FactionDescriptorPaths.Add(info.Value), true);
+            executor.AddExecutor("StartsWithTutorial", (exec, info) => StartsWithTutorial = info.Value.ToBool(), true);
+            executor.AddExecutor("HasIntroStartup", (exec, info) => HasIntroStartup = info.Value.ToBool(), true);
+            executor.AddExecutor("StartingTheme", (exec, info) => Theme = info.Value.ToLower(), true);
+            executor.AddExecutor("IntroStartupSong", (exec, info) => IntroStartupSong = info.Value, true);
+            executor.AddExecutor("IntroStartupSongDelay", (exec, info) => IntroStartupSongDelay = info.Value.ToFloat(), true);
+            executor.AddExecutor("SequencerSpinUpTime", (exec, info) => SequencerSpinUpTime = info.Value.ToFloat(), true);
+            executor.AddExecutor("ActionsToRunOnSequencerStart", (exec, info) => ActionsToRunOnSequencerStart = info.Value, true);
+            executor.AddExecutor("SequencerFlagRequiredForStart", (exec, info) => SequencerFlagRequiredForStart = info.Value, true);
+            executor.AddExecutor("SequencerTargetID", (exec, info) => SequencerTargetID = info.Value, true);
+            executor.AddExecutor("WorkshopDescription", (exec, info) => WorkshopDescription = info.Value, true);
+            executor.AddExecutor("WorkshopVisibility", (exec, info) => WorkshopVisibility = (byte)info.Value.ToInt(), true);
+            executor.AddExecutor("WorkshopTags", (exec, info) => WorkshopTags = info.Value, true);
+            executor.AddExecutor("WorkshopPreviewImagePath", (exec, info) => WorkshopPreviewImagePath = info.Value, true);
+            executor.AddExecutor("WorkshopLanguage", (exec, info) => WorkshopLanguage = info.Value, true);
+            executor.AddExecutor("WorkshopPublishID", (exec, info) => WorkshopPublishID = info.Value, true);
+            executor.AddExecutor("Logo", (exec, info) => TryLoadLogoImage(info.Value, true), true);
+            executor.AddExecutor("Pathfinder", (exec, info) => PathfinderExt = true, true);
+            executor.AddExecutor("Pathfinder.Dependents", (exec, info) => DependentsPaths = info.Value.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries), true);
             foreach (var pair in ExtensionInfoExecutors)
-                executor.AddExecutor(pair.Key, pair.Value);
+                executor.AddExecutor(pair.Key, pair.Value, true);
             executor.Parse();
             if (LogoImage == null)
                 if (!TryLoadLogoImage(folderPath + "Logo"))
