@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Pathfinder.Attribute;
-using Pathfinder.Command;
 using Pathfinder.Event;
 using Pathfinder.Util;
 using Pathfinder.Util.Attribute;
@@ -83,8 +82,7 @@ namespace Pathfinder.ModManager
                         foreach (var i in infos)
                         {
                             var attrib = i.GetFirstAttribute<CommandAttribute>();
-                            Command.Handler.RegisterCommand(attrib.Key ?? i.Name.RemoveLast("Command"), i.CreateDelegate<CommandFunc>(), attrib.Description, attrib.Autocomplete);
-
+                            Command.Handler.RegisterCommand(attrib.Key ?? i.Name.RemoveLast("Command"), i.CreateDelegate<Command.CommandFunc>(), attrib.Description, attrib.Autocomplete);
                         }
 
                     mod.Value.LoadContent();
