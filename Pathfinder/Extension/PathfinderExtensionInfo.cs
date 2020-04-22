@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Hacknet;
 using Hacknet.Extensions;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,6 +24,7 @@ namespace Pathfinder.Extension
             => ExtensionInfoExecutors.Remove(name);
 
         public bool PathfinderExt { get; protected set; } = false;
+        public string DependencyDirectory { get; protected set; } = "Dependency";
         public string[] DependentsPaths { get; protected set; } = new string[0];
 
         public PathfinderExtensionInfo() { }
@@ -77,12 +79,23 @@ namespace Pathfinder.Extension
             executor.AddExecutor("Logo", (exec, info) => TryLoadLogoImage(info.Value, true), true);
             executor.AddExecutor("Pathfinder", (exec, info) => PathfinderExt = true, true);
             executor.AddExecutor("Pathfinder.Dependents", (exec, info) => DependentsPaths = info.Value.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries), true);
+            executor.AddExecutor("Pathfinder.Dependency", (exec, info) => { if(!string.IsNullOrWhiteSpace(info.Value)) DependencyDirectory = info.Value; }, true);
             foreach (var pair in ExtensionInfoExecutors)
                 executor.AddExecutor(pair.Key, pair.Value, true);
             executor.Parse();
+            var invalids = Path.GetInvalidPathChars();
+            if (DependentsPaths.Any(s => s.Any(invalids.Contains) || s.Any(Path.GetInvalidFileNameChars().Contains)))
+                throw new IOException($"A Dependent contains invalid path or filename characters.");
+            if (DependencyDirectory.Any(invalids.Contains))
+                throw new IOException("Dependency contains invalid path characters.");
             if (LogoImage == null)
                 if (!TryLoadLogoImage(folderPath + "Logo"))
                     throw new FileNotFoundException($"{nameof(LogoImage)} not found for {folderPath.RemoveExtended(-1)}");
+
+            if (!string.IsNullOrEmpty(Path.GetPathRoot(DependencyDirectory)))
+                Logger.Warn($"{extPath} is searching for dependencies from root.");
+            if (DependentsPaths.Any(s => !string.IsNullOrEmpty(Path.GetPathRoot(s))))
+                Logger.Warn($"{extPath} has depedents referred from root.");
         }
 
         public bool TryLoadLogoImage(string path, bool hasExt = false)

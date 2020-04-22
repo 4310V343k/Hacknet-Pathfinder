@@ -32,6 +32,7 @@ namespace Pathfinder.Event
             Func = Info.GetMethodInvoker();
 
             var attrib = info.GetFirstAttribute<EventAttribute>();
+
             if (string.IsNullOrEmpty(modId))
                 ModId = Utility.ActiveModId;
             else ModId = modId;
