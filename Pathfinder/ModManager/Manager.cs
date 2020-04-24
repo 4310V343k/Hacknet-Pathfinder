@@ -52,21 +52,26 @@ namespace Pathfinder.ModManager
             return mod;
         }
 
-        public static void LoadMods()
+        public static List<IMod> LoadMods(string modFolder = null, string depFolder = null)
         {
             var separator = Path.DirectorySeparatorChar;
+            var result = new List<IMod>();
 
             Logger.Verbose("Checking/creating Mod folder '{0}'", ModFolderPath);
             if (!Directory.Exists(ModFolderPath))
                 Directory.CreateDirectory(ModFolderPath);
 
             if (Directory.Exists(DepFolderPath))
-                foreach (var dll in Directory.GetFiles(DepFolderPath + separator, "*.dll"))
+                foreach (var dll in Directory.GetFiles((depFolder ?? DepFolderPath) + separator, "*.dll"))
                     try { Assembly.LoadFrom(dll); }
                     catch (Exception e) { Logger.Error("Loading Dependency '{0}' failed: \n\t{1}", dll, e); }
 
-            foreach (var dll in Directory.GetFiles(ModFolderPath + separator, "*.dll"))
-                TryLoadMods(dll);
+            foreach (var dll in Directory.GetFiles((modFolder ?? ModFolderPath) + separator, "*.dll"))
+            {
+                var mods = TryLoadModsInAssembly(dll);
+                if(mods != null) result.AddRange(mods);
+            }
+            return result;
         }
 
         public static void LoadModContent()
@@ -279,7 +284,7 @@ namespace Pathfinder.ModManager
         public static IMod LoadMod(Type modType) => LoadMod(CreateMod(modType));
 
 
-        public static List<IMod> LoadMods(string path, string modId = null)
+        public static List<IMod> LoadModsInAssembly(string path, string modId = null)
         {
             var result = new List<IMod>();
             var asm = Assembly.LoadFile(path);
@@ -298,10 +303,12 @@ namespace Pathfinder.ModManager
             return result;
         }
 
-        public static void TryLoadMods(string path)
+        public static List<IMod> TryLoadModsInAssembly(string path)
         {
-            try { LoadMods(path); }
+            List<IMod> result = null;
+            try { result = LoadModsInAssembly(path); }
             catch (Exception ex) { Logger.Error("Mod file '{0}' failed to load:\n\t{1}", Path.GetFileName(path), ex); }
+            return result;
         }
     }
 }
