@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Hacknet;
@@ -14,6 +15,8 @@ namespace Pathfinder.Extension
     {
         private static readonly ModTaggedDict<string, ReadExecution> ExtensionInfoExecutors = new ModTaggedDict<string, ReadExecution>();
 
+        private readonly List<IMod> ExtensionMods = new List<IMod>();
+
         public static void AddExecutor(string name, ReadExecution loader, bool overrideable = false)
         {
             if (overrideable) ExtensionInfoExecutors.AddOverrideable(name, loader);
@@ -24,7 +27,7 @@ namespace Pathfinder.Extension
             => ExtensionInfoExecutors.Remove(name);
 
         public bool PathfinderExt { get; protected set; } = false;
-        public string DependencyDirectory { get; protected set; } = "Dependency";
+        public string DependencyDirectory { get; protected set; } = "Mods";
         public string[] DependentsPaths { get; protected set; } = new string[0];
 
         public PathfinderExtensionInfo() { }
@@ -98,7 +101,7 @@ namespace Pathfinder.Extension
                 Logger.Warn($"{extPath} has depedents referred from root.");
         }
 
-        public bool TryLoadLogoImage(string path, bool hasExt = false)
+        protected bool TryLoadLogoImage(string path, bool hasExt = false)
         {
             LogoImage = null;
             if (!hasExt)
@@ -111,6 +114,30 @@ namespace Pathfinder.Extension
             using (var fs = File.OpenRead(path))
                 LogoImage = Texture2D.FromStream(Game1.getSingleton().GraphicsDevice, fs);
             return LogoImage != null;
+        }
+
+        internal void LoadDependencies()
+        {
+            foreach (var path in DependentsPaths)
+            {
+                var mods = Manager.TryLoadModsInAssembly(Path.Combine(GetFullFolderPath(), path));
+                if (mods != null) ExtensionMods.AddRange(mods);
+            }
+
+            ExtensionMods.AddRange(Manager.LoadMods(DependencyDirectory, "Dependencies"));
+        }
+
+        internal void LoadContent()
+        {
+            foreach (var mod in ExtensionMods)
+                mod.LoadContent();
+        }
+
+        internal void UnloadDepedencies()
+        {
+            foreach (var mod in ExtensionMods)
+                Manager.UnloadMod(mod);
+            ExtensionMods.Clear();
         }
     }
 }
