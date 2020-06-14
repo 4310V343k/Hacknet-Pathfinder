@@ -53,14 +53,14 @@ namespace Pathfinder.Internal.Replacements
 
         public static bool RemoveComputerLoader(string name)
             => ComputerLoaders.Remove(name);
-
+       
 
         public static void LoadSaveFile(Stream stream, OS os)
         {
             var reader = new StreamReader(stream);
             var saveFileText = reader.ReadToEnd();
 
-            var executor = new EventExecutor(saveFileText, isPath: false);
+            var executor = new EventExecutor(saveFileText, false);
             var subExecutor = new ParsedTreeExecutor();
 
             executor.AddExecutor("HacknetSave", (exec, info) =>

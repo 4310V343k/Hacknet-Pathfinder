@@ -21,6 +21,8 @@ using Pathfinder.Util.Types;
 using static Pathfinder.Event.DrawMainMenuTitlesEvent;
 using Pathfinder.Game.OS;
 using Pathfinder.Extension;
+using Hacknet.UIUtils;
+using Hacknet.Extensions;
 
 namespace Pathfinder
 {
@@ -316,7 +318,11 @@ namespace Pathfinder
             var loadSaveFileEvent = new Event.OSLoadSaveFileEvent(self, null, stream);
             loadSaveFileEvent.CallEvent();
             if (loadSaveFileEvent.IsCancelled)
+            {
+                stream.Flush();
+                stream.Close();
                 return true;
+            }
             return false;
         }
 
@@ -453,6 +459,8 @@ namespace Pathfinder
             {
                 Stream stream = System.IO.File.OpenRead(filename);
                 onLoadContentComputerEnd(ref stream, ref result, ref filename, ref preventAddingToNetmap, ref preventInitDaemons);
+                stream.Flush();
+                stream.Close();
                 return true;
             }
             return false;
@@ -838,10 +846,21 @@ namespace Pathfinder
         [Patch("Hacknet.Extensions.ExtensionInfo.ReadExtensionInfo", flags: InjectFlags.PassParametersRef | InjectFlags.ModifyReturn)]
         public static bool onReadExtensionInfo(out Hacknet.Extensions.ExtensionInfo result, ref string folderpath)
         {
-            var pfExt = new PathfinderExtensionInfo();
-            pfExt.ParseExtensionInfo(folderpath);
-            result = pfExt;
+            result = new PathfinderExtensionInfo(folderpath);
             return true;
+        }
+
+        [Patch("Hacknet.UIUtils.SavefileLoginScreen.Draw", 525,
+            flags: InjectFlags.PassInvokingInstance | InjectFlags.ModifyReturn | InjectFlags.PassParametersRef)]
+        public static bool onInitializeSession(SavefileLoginScreen self, ref SpriteBatch batch, ref Rectangle rect)
+        {
+            if (self.IsNewAccountMode && self.Answers.Count < 3) return false;
+            if (Settings.IsInExtensionMode && ExtensionLoader.ActiveExtensionInfo is PathfinderExtensionInfo pei)
+            {
+                pei.LoadDependencies();
+                pei.LoadContent();
+            }
+            return false;
         }
     }
 }

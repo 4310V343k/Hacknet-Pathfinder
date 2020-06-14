@@ -95,7 +95,7 @@ namespace Pathfinder.Internal.Patcher
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error applying patch for '{attrib.MethodSig}'", ex);
+                throw new Exception($"Error applying patch for '{attrib.MethodSig}', length {def.Body.CodeSize}", ex);
             }
         }
     }
