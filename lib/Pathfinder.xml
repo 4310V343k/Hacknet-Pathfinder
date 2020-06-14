@@ -169,7 +169,7 @@
             <returns>The standard file data or <c>null</c> if it doesn't exist.</returns>
             <param name="inter">The Executable Interface</param>
         </member>
-        <member name="M:Pathfinder.Command.Handler.RegisterCommand(System.String,Pathfinder.Command.Handler.CommandFunc,System.String,System.Boolean)">
+        <member name="M:Pathfinder.Command.Handler.RegisterCommand(System.String,Pathfinder.Command.CommandFunc,System.String,System.Boolean)">
             <summary>
             Adds a command to the game.
             </summary>
