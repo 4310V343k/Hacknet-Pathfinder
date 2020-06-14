@@ -173,7 +173,6 @@ namespace PathfinderPatcher
                 {
                     task.execute(gameAssembly.MainModule);
                 }
-
             }
             catch (Exception ex)
             {

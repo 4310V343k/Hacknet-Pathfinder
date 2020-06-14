@@ -53,13 +53,12 @@ namespace Pathfinder.Internal.Replacements
 
         public static bool RemoveComputerLoader(string name)
             => ComputerLoaders.Remove(name);
-
+       
 
         public static void LoadSaveFile(Stream stream, OS os)
         {
             var reader = new StreamReader(stream);
             var saveFileText = reader.ReadToEnd();
-
 
             if(string.IsNullOrEmpty(saveFileText))
                 throw new FormatException("Blank account data detected! (This is a vanilla saving issue)");
