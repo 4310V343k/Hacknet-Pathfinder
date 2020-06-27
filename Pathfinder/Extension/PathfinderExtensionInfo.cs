@@ -30,6 +30,8 @@ namespace Pathfinder.Extension
         public string DependencyDirectory { get; protected set; } = "Mods";
         public string[] DependentsPaths { get; protected set; } = new string[0];
 
+        public string MailServerId { get; protected set; } = "jmail";
+
         public PathfinderExtensionInfo() { }
         public PathfinderExtensionInfo(string folderPath)
         {
@@ -80,9 +82,13 @@ namespace Pathfinder.Extension
             executor.AddExecutor("WorkshopLanguage", (exec, info) => WorkshopLanguage = info.Value, true);
             executor.AddExecutor("WorkshopPublishID", (exec, info) => WorkshopPublishID = info.Value, true);
             executor.AddExecutor("Logo", (exec, info) => TryLoadLogoImage(info.Value, true), true);
+            // Pathfinder custom tags
             executor.AddExecutor("Pathfinder", (exec, info) => PathfinderExt = true, true);
             executor.AddExecutor("Pathfinder.Dependents", (exec, info) => DependentsPaths = info.Value.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries), true);
             executor.AddExecutor("Pathfinder.Dependency", (exec, info) => { if(!string.IsNullOrWhiteSpace(info.Value)) DependencyDirectory = info.Value; }, true);
+
+            executor.AddExecutor("Pathfinder.MailServer", (exec, info) => MailServerId = info.Value.TrimEnd());
+
             foreach (var pair in ExtensionInfoExecutors)
                 executor.AddExecutor(pair.Key, pair.Value, true);
             executor.Parse();

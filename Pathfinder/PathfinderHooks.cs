@@ -872,5 +872,23 @@ namespace Pathfinder
             }
             return false;
         }
+
+        [Patch("Hacknet.NetworkMap.loadAssignGameNodes", 0, flags: InjectFlags.PassInvokingInstance | InjectFlags.ModifyReturn)]
+        public static bool onLoadAssignGameNodes(NetworkMap self)
+        {
+            if (Settings.IsInExtensionMode)
+            {
+                var extInfo = (PathfinderExtensionInfo)ExtensionLoader.ActiveExtensionInfo;
+                self.mailServer = Programs.getComputer(self.os, extInfo.MailServerId);
+                if (self.mailServer == null) {
+                    Logger.Log(Logger.LogLevel.ERROR, $"Specified extension mail server ({extInfo.MailServerId}) does not exist.");
+                }
+                if(self.mailServer.getDaemon(typeof(MailServer)) == null) {
+                    Logger.Log(Logger.LogLevel.ERROR, $"Specified extension mail server ({extInfo.MailServerId}) does not contain a mail daemon.");
+                }
+                return true;
+            }
+            return false;
+        }
     }
 }
