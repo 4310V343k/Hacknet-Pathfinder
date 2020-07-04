@@ -63,7 +63,7 @@ namespace Pathfinder.Internal.Replacements
             if(string.IsNullOrEmpty(saveFileText))
                 throw new FormatException("Blank account data detected! (This is a vanilla saving issue)");
 
-            var executor = new EventExecutor(saveFileText, isPath: false);
+            var executor = new EventExecutor(saveFileText, false);
             var subExecutor = new ParsedTreeExecutor();
 
             executor.AddExecutor("HacknetSave", (exec, info) =>

@@ -854,7 +854,7 @@ namespace Pathfinder
         }
 
         [Patch("Hacknet.Extensions.ExtensionInfo.ReadExtensionInfo", flags: InjectFlags.PassParametersRef | InjectFlags.ModifyReturn)]
-        public static bool onReadExtensionInfo(out Hacknet.Extensions.ExtensionInfo result, ref string folderpath)
+        public static bool onReadExtensionInfo(out ExtensionInfo result, ref string folderpath)
         {
             result = new PathfinderExtensionInfo(folderpath);
             return true;

@@ -48,24 +48,25 @@ namespace PathfinderPatcher
             AssemblyDefinition gameAssembly = null;
             try
             {
-                if(!skipLaunchers) {
-                   if (File.Exists(exeDir + "Hacknet"))
-                   {
+                if (!skipLaunchers)
+                {
+                    if (File.Exists(exeDir + "Hacknet"))
+                    {
                         File.Copy(exeDir + "Hacknet", exeDir + "HacknetPathfinder", true);
 
                         var txt = File.ReadAllText(exeDir + "Hacknet");
                         txt = txt.Replace("Hacknet", "HacknetPathfinder");
 
-                       File.WriteAllText(exeDir + "HacknetPathfinder", txt);
-                   }
+                        File.WriteAllText(exeDir + "HacknetPathfinder", txt);
+                    }
 
-                   foreach (var n in new string[]{
+                    foreach (var n in new string[]{
                        exeDir + "Hacknet.bin.x86",
                        exeDir + "Hacknet.bin.x86_64",
                        exeDir + "Hacknet.bin.osx"
                     })
-                    if (File.Exists(n))
-                        File.Copy(n, exeDir + "HacknetPathfinder.bin" + Path.GetExtension(n), true);
+                        if (File.Exists(n))
+                            File.Copy(n, exeDir + "HacknetPathfinder.bin" + Path.GetExtension(n), true);
                 }
                 // Loads Hacknet.exe's assembly
                 gameAssembly = LoadAssembly(exeDir + "Hacknet.exe");
@@ -169,10 +170,11 @@ namespace PathfinderPatcher
 
 
                 // Run Patcher Tasks
-                foreach(TypeTaskItem task in TaskReader.readTaskListFile(new FileInfo(pathfinderDir + "PatcherCommands.xml").FullName))
+                foreach (TypeTaskItem task in TaskReader.readTaskListFile(new FileInfo(pathfinderDir + "PatcherCommands.xml").FullName))
                 {
                     task.execute(gameAssembly.MainModule);
                 }
+
             }
             catch (Exception ex)
             {
@@ -180,7 +182,7 @@ namespace PathfinderPatcher
                 gameAssembly?.Write("HacknetPathfinder.exe");
                 return 3;
             }
-            if(!spitOutHacknetOnly) try
+            if (!spitOutHacknetOnly) try
                 {
                     using (var stream = new MemoryStream())
                     {
@@ -193,7 +195,7 @@ namespace PathfinderPatcher
                             .Invoke(null, new object[] { gameAssembly });
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     HandleExeception("Failure during Pathfinder.dll's Patch Execution:", ex);
                     gameAssembly?.Write("HacknetPathfinder.exe");
@@ -350,7 +352,7 @@ namespace PathfinderPatcher
             InjectDirection direction = InjectDirection.Before,
             InjectFlags f = InjectFlags.None,
             int[] localsID = null,
-	        FieldDefinition[] typeFields = null,
+            FieldDefinition[] typeFields = null,
             int token = 0
         )
         {
@@ -386,11 +388,11 @@ namespace PathfinderPatcher
                 returnDef = new VariableDefinition(self.ReturnType);
                 body.Variables.Add(returnDef);
             }
-            if (flags.PassTag) il.InsertBefore (inst, il.Create(OpCodes.Ldc_I4, token));
+            if (flags.PassTag) il.InsertBefore(inst, il.Create(OpCodes.Ldc_I4, token));
             if (flags.PassInvokingInstance) il.InsertBefore(inst, il.Create(OpCodes.Ldarg_0));
             if (flags.ModifyReturn && !isVoid) il.InsertBefore(inst, il.Create(OpCodes.Ldloca_S, returnDef));
             if (flags.PassLocals)
-                foreach (int i in localsID) il.InsertBefore(inst, il.Create(OpCodes.Ldloca_S, (byte) i));
+                foreach (int i in localsID) il.InsertBefore(inst, il.Create(OpCodes.Ldloca_S, (byte)i));
             if (flags.PassFields)
             {
                 var memberRefs = typeFields.Select(t => t.Module.ImportReference(t));

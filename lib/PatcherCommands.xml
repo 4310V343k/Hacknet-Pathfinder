@@ -13,6 +13,11 @@
 				<allMethods access="public" />
 			</type>
 		</namespace>
+		<namespace name="UIUtils">
+			<type name="SavefileLoginScreen">
+				<allFields access="public" />
+			</type>
+		</namespace>
 		<type name="Computer">
 			<!-- these are not required since we do all fields anyway.
 			no idea why they used to be extra.
