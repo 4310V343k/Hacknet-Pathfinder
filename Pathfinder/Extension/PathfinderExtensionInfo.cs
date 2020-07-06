@@ -83,11 +83,11 @@ namespace Pathfinder.Extension
             executor.AddExecutor("WorkshopPublishID", (exec, info) => WorkshopPublishID = info.Value, true);
             executor.AddExecutor("Logo", (exec, info) => TryLoadLogoImage(info.Value, true), true);
             // Pathfinder custom tags
-            executor.AddExecutor("Pathfinder", (exec, info) => PathfinderExt = true, true);
+            executor.AddExecutor("Pathfinder", (exec, info) => PathfinderExt = true, false);
             executor.AddExecutor("Pathfinder.Dependents", (exec, info) => DependentsPaths = info.Value.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries), true);
             executor.AddExecutor("Pathfinder.Dependency", (exec, info) => { if(!string.IsNullOrWhiteSpace(info.Value)) DependencyDirectory = info.Value; }, true);
 
-            executor.AddExecutor("Pathfinder.MailServer", (exec, info) => MailServerId = info.Value.TrimEnd());
+            executor.AddExecutor("Pathfinder.MailServer", (exec, info) => MailServerId = info.Value, true);
 
             foreach (var pair in ExtensionInfoExecutors)
                 executor.AddExecutor(pair.Key, pair.Value, true);
